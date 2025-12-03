@@ -59,9 +59,7 @@ Route::middleware('auth')->prefix('/payment')->name('payment.')->group(function 
 // ============================
 Route::middleware('isAdmin')->prefix('/admin')->name('admin.')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [EventController::class, 'adminDashboard'])->name('dashboard');
 
     // USERS (ADMIN)
     Route::prefix('/users')->name('users.')->group(function () {

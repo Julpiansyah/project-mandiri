@@ -204,4 +204,59 @@ class EventController extends Controller
     {
         return Excel::download(new EventsExport, 'events.xlsx');
     }
+
+    /**
+     * ADMIN DASHBOARD - dengan pie chart event paling diminati
+     */
+    public function adminDashboard()
+    {
+        // Hitung total events, payments, dan users
+        $totalEvents = Event::count();
+        $totalPayments = \App\Models\Payment::count();
+        $totalUsers = \App\Models\User::where('role', 'user')->count();
+        $totalRevenue = \App\Models\Payment::sum('total_price');
+
+        // Ambil event yang paling diminati berdasarkan jumlah payment
+        $eventAnalytics = Event::withCount('payments')
+            ->orderByDesc('payments_count')
+            ->take(10)
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'title' => $event->title,
+                    'count' => $event->payments_count,
+                    'revenue' => $event->payments()->sum('total_price')
+                ];
+            });
+
+        // Data untuk pie chart
+        $chartLabels = $eventAnalytics->pluck('title');
+        $chartData = $eventAnalytics->pluck('count');
+        $chartColors = $this->generateColors(count($chartLabels));
+
+        return view('admin.dashboard', compact(
+            'totalEvents',
+            'totalPayments',
+            'totalUsers',
+            'totalRevenue',
+            'eventAnalytics',
+            'chartLabels',
+            'chartData',
+            'chartColors'
+        ));
+    }
+
+    /**
+     * Generate random colors untuk chart
+     */
+    private function generateColors($count)
+    {
+        $colors = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+            '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384',
+            '#36A2EB', '#FFCE56', '#FF9F40', '#FF6384', '#36A2EB'
+        ];
+
+        return array_slice($colors, 0, $count);
+    }
 }
