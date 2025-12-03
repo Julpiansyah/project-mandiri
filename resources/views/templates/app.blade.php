@@ -121,7 +121,13 @@
                                     <a class="dropdown-item" href="{{ route('admin.events.index') }}">Data Event</a>
                                 </li>
                                 <li>
+                                    <a class="dropdown-item" href="{{ route('admin.tickets.index') }}">Data Tiket</a>
+                                </li>
+                                <li>
                                     <a class="dropdown-item" href="{{ route('admin.users.index') }}">Data Users</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('admin.payments.index') }}">Riwayat Transaksi</a>
                                 </li>
                             </ul>
                         </li>

@@ -33,4 +33,35 @@ class Payment extends Model
     {
         return $this->belongsTo(Event::class);
     }
+
+    /**
+     * Computed attribute: apakah tiket/event terkait sudah kadaluarsa?
+     * - Menggunakan `end_date` jika tersedia, fallback ke `start_date`.
+     * - Perbandingan date-only terhadap hari ini, sehingga event pada hari ini tetap aktif.
+     */
+    public function getIsExpiredAttribute()
+    {
+        $event = $this->event;
+        if (!$event) return false;
+
+        $dateToCheck = $event->end_date ?? $event->start_date;
+        if (empty($dateToCheck)) return false;
+
+        try {
+            $eventDate = \Carbon\Carbon::parse($dateToCheck)->toDateString();
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        $today = \Carbon\Carbon::today()->toDateString();
+        return ($eventDate < $today);
+    }
+
+    /**
+     * Status berdasarkan tanggal event: aktif atau kadaluarsa
+     */
+    public function getStatusBasedOnDateAttribute()
+    {
+        return $this->is_expired ? 'kadaluarsa' : 'aktif';
+    }
 }

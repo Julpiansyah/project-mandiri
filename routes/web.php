@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\TicketController;
 
 // ============================
 // HOME — FIX SESUAI SARAN
@@ -50,6 +51,7 @@ Route::middleware('auth')->prefix('/payment')->name('payment.')->group(function 
     Route::get('/success/{payment_id}', [PaymentController::class, 'success'])->name('success');
     Route::get('/history', [PaymentController::class, 'history'])->name('history');
     Route::get('/detail/{payment_id}', [PaymentController::class, 'show'])->name('show');
+    Route::get('/download-pdf/{payment_id}', [PaymentController::class, 'downloadPDF'])->name('downloadPDF');
 });
 
 // ============================
@@ -98,5 +100,18 @@ Route::middleware('isAdmin')->prefix('/admin')->name('admin.')->group(function (
         Route::delete('/delete-permanent/{id}', [EventController::class, 'deletePermanent'])->name('delete_permanent');
 
         Route::get('/datatables', [EventController::class, 'datatables'])->name('datatables');
+    });
+
+    // PAYMENTS (ADMIN) - daftar riwayat transaksi untuk admin
+    Route::prefix('/payments')->name('payments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PaymentController::class, 'adminIndex'])->name('index');
+        Route::get('/export', [\App\Http\Controllers\PaymentController::class, 'exportAdmin'])->name('export');
+        // detail payment sudah tersedia di PaymentController::show (admin dapat mengakses)
+    });
+
+    // TICKETS (ADMIN)
+    Route::prefix('/tickets')->name('tickets.')->group(function () {
+        Route::get('/', [TicketController::class, 'index'])->name('index');
+        Route::post('/update-statuses', [TicketController::class, 'updateStatuses'])->name('update_statuses');
     });
 });

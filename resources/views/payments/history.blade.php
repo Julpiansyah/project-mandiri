@@ -50,18 +50,15 @@
                                         @endswitch
                                     </td>
                                     <td>
-                                        @if($payment->status === 'completed')
-                                            <span class="badge bg-success">Selesai</span>
-                                        @elseif($payment->status === 'pending')
-                                            <span class="badge bg-warning">Menunggu</span>
-                                        @else
-                                            <span class="badge bg-danger">{{ ucfirst($payment->status) }}</span>
-                                        @endif
+                                        <span class="badge bg-success">Berhasil</span>
                                     </td>
                                     <td>{{ $payment->created_at->format('d M Y H:i') }}</td>
                                     <td>
                                         <a href="{{ route('payment.show', $payment->id) }}" class="btn btn-sm btn-info">
                                             <i class="fas fa-eye"></i> Detail
+                                        </a>
+                                        <a href="{{ route('payment.downloadPDF', $payment->id) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-download"></i> PDF
                                         </a>
                                     </td>
                                 </tr>

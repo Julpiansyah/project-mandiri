@@ -7,6 +7,11 @@ use App\Models\Event;
 use App\Models\Payment;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PaymentsExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class PaymentController extends Controller
 {
@@ -97,8 +102,30 @@ class PaymentController extends Controller
      */
     public function history()
     {
-        $payments = Auth::user()->payments()->with('event')->latest()->get();
+        // Ambil semua payment milik user beserta event terkait
+        $payments = Payment::with('event')->where('user_id', Auth::user()->id)->get();
+
+        // is_expired sekarang di-handle oleh accessor di model Payment
         return view('payments.history', compact('payments'));
+    }
+
+    /**
+     * Admin: lihat semua transaksi (table)
+     */
+    public function adminIndex()
+    {
+        // Ambil semua payment dengan relasi user+event
+        $payments = Payment::with(['user','event'])->orderByDesc('created_at')->get();
+
+        return view('admin.payments.index', compact('payments'));
+    }
+
+    /**
+     * Admin export payments to Excel
+     */
+    public function exportAdmin()
+    {
+        return Excel::download(new PaymentsExport, 'payments.xlsx');
     }
 
     /**
@@ -113,5 +140,20 @@ class PaymentController extends Controller
         }
 
         return view('payments.detail', compact('payment'));
+    }
+
+    /**
+     * Download payment receipt as PDF
+     */
+    public function downloadPDF($payment_id)
+    {
+        $payment = Payment::with(['user', 'event'])->findOrFail($payment_id);
+
+        if (Auth::user()->id !== $payment->user_id && Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+
+        $pdf = Pdf::loadView('payments.pdf-receipt-standalone', compact('payment'));
+        return $pdf->download('bukti-pembayaran-' . $payment->transaction_id . '.pdf');
     }
 }

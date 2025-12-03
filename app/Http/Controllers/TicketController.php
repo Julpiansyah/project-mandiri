@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ticket;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
@@ -12,7 +12,8 @@ class TicketController extends Controller
      */
     public function index()
     {
-        //
+        $payments = \App\Models\Payment::with(['user', 'event'])->where('status', 'completed')->paginate(10);
+        return view('admin.ticket.index', compact('payments'));
     }
 
     /**
@@ -34,7 +35,7 @@ class TicketController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ticket $ticket)
+    public function show(Ticket $ticket)
     {
         //
     }
@@ -42,7 +43,7 @@ class TicketController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ticket $ticket)
+    public function edit(Ticket $ticket)
     {
         //
     }
@@ -50,7 +51,7 @@ class TicketController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ticket $ticket)
+    public function update(Request $request, Ticket $ticket)
     {
         //
     }
@@ -58,8 +59,22 @@ class TicketController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ticket $ticket)
+    public function destroy(Ticket $ticket)
     {
         //
+    }
+
+    /**
+     * Update ticket statuses based on event dates
+     */
+    public function updateStatuses()
+    {
+        $tickets = Ticket::with('event')->get();
+
+        foreach ($tickets as $ticket) {
+            $ticket->updateStatusBasedOnDate();
+        }
+
+        return redirect()->back()->with('success', 'Status tiket telah diperbarui berdasarkan tanggal event');
     }
 }
