@@ -52,3 +52,32 @@
         </div>
     </div>
 @endsection
+
+@section('script')
+<script>
+    $(document).ready(function() {
+        $('#ticketsTable').DataTable({
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "lengthChange": true,
+            "pageLength": 10,
+            "language": {
+                "search": "Cari:",
+                "lengthMenu": "Tampilkan _MENU_ entri per halaman",
+                "zeroRecords": "Tidak ada data yang ditemukan",
+                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                "infoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                "infoFiltered": "(difilter dari _MAX_ total entri)",
+                "paginate": {
+                    "first": "Pertama",
+                    "last": "Terakhir",
+                    "next": "Selanjutnya",
+                    "previous": "Sebelumnya"
+                }
+            }
+        });
+    });
+</script>
+@endsection

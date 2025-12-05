@@ -10,7 +10,7 @@
 
         @if($payments->count() > 0)
             <div class="table-responsive">
-                <table class="table table-bordered table-hover">
+                <table id="paymentsTable" class="table table-bordered table-hover">
                     <thead class="table-dark">
                         <tr>
                             <th>#</th>
@@ -28,7 +28,7 @@
                     <tbody>
                         @foreach($payments as $key => $payment)
                             <tr>
-                                <td class="align-middle">{{ $key + 1 }}</td>
+                                <td class="align-middle">{{ ($payments->currentPage() - 1) * $payments->perPage() + $key + 1 }}</td>
                                 <td class="align-middle"><small class="font-monospace">{{ $payment->transaction_id }}</small></td>
                                 <td class="align-middle">{{ $payment->user->name ?? '—' }}<br><small>{{ $payment->user->email ?? '' }}</small></td>
                                 <td class="align-middle">{{ $payment->event->title ?? '—' }}</td>
@@ -47,9 +47,30 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $payments->links() }}
+                </div>
             </div>
         @else
             <div class="alert alert-info">Belum ada transaksi.</div>
         @endif
     </div>
 @endsection
+
+@push('script')
+<script>
+    $(document).ready(function() {
+        $('#paymentsTable').DataTable({
+            "paging": false,
+            "searching": true,
+            "ordering": true,
+            "info": false,
+            "lengthChange": false,
+            "language": {
+                "search": "Cari:",
+                "zeroRecords": "Tidak ada data yang ditemukan"
+            }
+        });
+    });
+</script>
+@endpush

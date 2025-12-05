@@ -65,7 +65,7 @@ class PaymentController extends Controller
         // Generate transaction ID yang unik
         $transaction_id = 'TRX-' . strtoupper(Str::random(8)) . '-' . date('YmdHis');
 
-        // Buat record payment
+        // Buat record payment dan tersimpan d dta base
         $payment = Payment::create([
             'user_id' => $user->id,
             'event_id' => $event->id,
@@ -114,8 +114,8 @@ class PaymentController extends Controller
      */
     public function adminIndex()
     {
-        // Ambil semua payment dengan relasi user+event
-        $payments = Payment::with(['user','event'])->orderByDesc('created_at')->get();
+        // Ambil semua payment dengan relasi user+event yang masih ada
+        $payments = Payment::with(['user','event'])->whereHas('user')->whereHas('event')->orderByDesc('created_at')->paginate(50);
 
         return view('admin.payments.index', compact('payments'));
     }
@@ -125,12 +125,21 @@ class PaymentController extends Controller
      */
     public function exportAdmin()
     {
+        return Excel::download(new PaymentsExport, 'riwayat-transaksi-pengguna.xlsx');
+    }
+
+    /**
+     * User export payments to Excel
+     */
+    public function export()
+    {
         return Excel::download(new PaymentsExport, 'payments.xlsx');
     }
 
     /**
      * Detail pembayaran
      */
+    //menampilkan detail stu pembyran 
     public function show($payment_id)
     {
         $payment = Payment::with(['user', 'event'])->findOrFail($payment_id);

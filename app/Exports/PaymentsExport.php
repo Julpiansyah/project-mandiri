@@ -16,7 +16,7 @@ class PaymentsExport implements FromCollection, WithHeadings, WithMapping, Shoul
      */
     public function collection()
     {
-        return Payment::with(['user','event'])->orderByDesc('created_at')->get();
+        return Payment::with(['user','event'])->whereHas('user')->whereHas('event')->orderByDesc('created_at')->get();
     }
 
     /**

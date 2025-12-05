@@ -118,8 +118,8 @@
 
                     {{-- Buttons --}}
                     <div class="d-grid gap-2">
-                        <a href="{{ route('payment.history') }}" class="btn btn-primary">
-                            <i class="fas fa-history"></i> Lihat Riwayat Pembelian
+                        <a href="{{ route('payment.downloadPDF', $payment->id) }}" class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download Bukti Pembayaran (PDF)
                         </a>
                         <a href="{{ route('home') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-home"></i> Kembali ke Beranda

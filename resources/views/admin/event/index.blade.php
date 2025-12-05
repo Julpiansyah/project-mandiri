@@ -17,7 +17,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+            <table id="eventsTable" class="table table-striped table-bordered table-hover">
                 <thead class="table-dark">
                     <tr>
                         <th class="text-center" style="width: 50px;">#</th>
@@ -30,9 +30,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($events as $key => $event)
+                    @foreach ($events as $event)
                         <tr>
-                            <td class="text-center align-middle">{{ $key + 1 }}</td>
+                            <td class="text-center align-middle">{{ $event->id }}</td>
                             <td class="align-middle">{{ $event->title }}</td>
                             <td class="align-middle">{{ \Carbon\Carbon::parse($event->start_date)->format('d M Y H:i') }}</td>
                             <td class="align-middle">
@@ -70,3 +70,39 @@
         </div>
     </div>
 @endsection
+
+@push('script')
+<script>
+    $(document).ready(function() {
+        console.log('Initializing DataTable for eventsTable');
+        if ($.fn.DataTable) {
+            console.log('DataTable plugin is available');
+            $('#eventsTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "lengthChange": true,
+                "pageLength": 10,
+                "language": {
+                    "search": "Cari:",
+                    "lengthMenu": "Tampilkan _MENU_ entri per halaman",
+                    "zeroRecords": "Tidak ada data yang ditemukan",
+                    "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "infoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                    "infoFiltered": "(difilter dari _MAX_ total entri)",
+                    "paginate": {
+                        "first": "Pertama",
+                        "last": "Terakhir",
+                        "next": "Selanjutnya",
+                        "previous": "Sebelumnya"
+                    }
+                }
+            });
+            console.log('DataTable initialized successfully');
+        } else {
+            console.error('DataTable plugin is not available');
+        }
+    });
+</script>
+@endpush
